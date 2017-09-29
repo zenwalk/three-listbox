@@ -5,17 +5,20 @@
     </header>
     <main>
       <hello></hello>
+      <demo></demo>
     </main>
   </div>
 </template>
 
 <script>
 import Hello from './components/Hello'
+import Demo from './components/Demo'
 
 export default {
   name: 'app',
   components: {
-    Hello
+    Hello,
+    Demo
   }
 }
 </script>
