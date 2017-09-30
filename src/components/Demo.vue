@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <button @click="nextPage">nextPage</button>
+                    <button class="btn btn-primary" :disabled="isLastPage" @click="nextPage">nextPage</button>
 
                     <table class="table">
                         <thead>
@@ -18,6 +18,26 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li>
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        </li>
+                        <li><a href="#">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                        </li>
+                    </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -31,11 +51,12 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            columns: [{ label: '标题', field: 'title' }, { label: '内容', field: 'body' }],
+            columns: [{ label: 'ID', field: 'id' }, { label: '标题', field: 'title' }, { label: '内容', field: 'body' }],
             searchObject: null,
             pageObject: {
                 index: 1,
                 count: 10,
+                totalPage: 1
             },
             currentData: null
         }
@@ -56,19 +77,27 @@ export default {
         // }
     },
     computed: {
+        isFirstPage() {
+            return this.pageObject.index === 1
+        },
+        isLastPage() {
+            return this.pageObject.index === this.pageObject.totalPage
+        }
     },
     methods: {
         findByCol(row, col) {
             return row[col.field]
         },
         updateData(searchObject, pageObject) {
-            console.log('update data ', pageObject);
             axios.get('http://jsonplaceholder.typicode.com/posts', {
                 params: {
                     _page: pageObject.index,
                     _limit: pageObject.count
                 }
             }).then(response => {
+                var total = parseInt(response.headers['x-total-count']);
+                console.log(total)
+                this.pageObject.totalPage = Math.ceil(total / this.pageObject.count) 
                 this.currentData = response.data
             })
         },
